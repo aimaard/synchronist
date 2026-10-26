@@ -1,25 +1,16 @@
 services:
   synchronist:
     image: siegy22/synchronist:1.0.0.beta2
-    depends_on:
-      - redis
     volumes:
       - synchronist_storage:/synchronist/storage
 <volumes>
     environment:
-      REDIS_URL: redis://redis:6379/1
       SYNCHRONIST_USERNAME: "<username>"
       SYNCHRONIST_PASSWORD: "<password>"
       SECRET_KEY_BASE: "<secret_key>"
     ports:
       - "<port>:3000"
     restart: always
-  redis:
-    image: redis
-    volumes:
-      - redis_data:/data
-    restart: always
 
 volumes:
   synchronist_storage:
-  redis_data:

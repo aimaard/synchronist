@@ -29,11 +29,9 @@ gem "jbuilder"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-# Use Redis adapter to run Action Cable in production
-gem "redis", "~> 5.0"
-
-# Use the database-backed adapter for Active Job
+# Use the database-backed adapters for Active Job and Action Cable
 gem "solid_queue", ">= 1.7"
+gem "solid_cable", ">= 4.1"
 
 # Web UI for inspecting Solid Queue jobs (mounted at /jobs)
 gem "mission_control-jobs", ">= 1.3"

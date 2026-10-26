@@ -38,7 +38,7 @@ ENV RAILS_ENV=production \
     RAILS_LOG_TO_STDOUT=true \
     SOLID_QUEUE_IN_PUMA=true
 
-# All SQLite databases (app, queue) and attachments live here
+# All SQLite databases (app, queue, cable) and attachments live here
 VOLUME /synchronist/storage
 
 ENTRYPOINT ["docker-entrypoint.sh"]
