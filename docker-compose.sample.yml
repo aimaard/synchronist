@@ -1,7 +1,7 @@
 # Template used by setup-deployment.sh, see README.md for complete examples.
 services:
   synchronist:
-    image: siegy22/synchronist:1.0.0.beta3
+    image: ghcr.io/aimaard/synchronist:latest
     restart: always
     ports:
       - "<port>:3000"

@@ -16,6 +16,9 @@ RUN bundle exec rails assets:clobber && bundle exec rails assets:precompile
 
 FROM ruby:4.0.9-alpine3.23
 
+# Set from the git tag by the release workflow (.github/workflows/release.yml)
+ARG SYNCHRONIST_VERSION=dev
+
 RUN apk update && apk add --no-cache coreutils rsync tzdata
 
 WORKDIR /synchronist
@@ -36,7 +39,8 @@ COPY docker-entrypoint.sh /bin/
 ENV RAILS_ENV=production \
     RAILS_SERVE_STATIC_FILES=true \
     RAILS_LOG_TO_STDOUT=true \
-    SOLID_QUEUE_IN_PUMA=true
+    SOLID_QUEUE_IN_PUMA=true \
+    SYNCHRONIST_VERSION=$SYNCHRONIST_VERSION
 
 # Default locations of the folders, mount them as volumes (see README.md)
 ENV SYNCHRONIST_PAYLOAD_PATH=/data/payload/payload.synchronist \

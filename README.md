@@ -1,6 +1,6 @@
 ![Diagram](doc/logo.png)
 
-[![Rails](https://github.com/siegy22/synchronist/actions/workflows/rails.yml/badge.svg)](https://github.com/siegy22/synchronist/actions/workflows/rails.yml)
+[![Rails](https://github.com/aimaard/synchronist/actions/workflows/rails.yml/badge.svg)](https://github.com/aimaard/synchronist/actions/workflows/rails.yml)
 
 Synchronist is mirroring/sync tool which allows to send increments without having an active connection between them.
 
@@ -20,8 +20,13 @@ so big files that are still being copied aren't picked up too early (or multiple
 
 ## Installation
 
-Synchronist is distributed as a single [docker](https://docs.docker.com/get-docker/) image (podman works too). It doesn't need any
-other services: Everything is stored in SQLite databases inside the `/synchronist/storage` volume.
+Synchronist is distributed as a single [docker](https://docs.docker.com/get-docker/) image (podman works too) for
+`linux/amd64` and `linux/arm64`: `ghcr.io/aimaard/synchronist`. It doesn't need any other services: Everything is stored
+in SQLite databases inside the `/synchronist/storage` volume.
+
+The image is tagged with each release version (see [Releases](https://github.com/aimaard/synchronist/releases)) and
+`latest` for the newest release. The examples use `latest`, pin a version (e.g. `ghcr.io/aimaard/synchronist:1.0.0`) to
+control when you upgrade.
 
 The folders synchronist works with are mounted into the container under `/data`:
 
@@ -44,7 +49,7 @@ docker run -d --name synchronist --restart always -p 3000:3000 \
   -e SYNCHRONIST_MODE=receiver -e SYNCHRONIST_PASSWORD=change-me \
   -v synchronist:/synchronist/storage \
   -v /srv/mirror:/data/storage -v /mnt/from-sender:/data/receive -v /mnt/to-sender:/data/payload \
-  siegy22/synchronist:1.0.0.beta3
+  ghcr.io/aimaard/synchronist:latest
 ```
 
 Sender:
@@ -54,7 +59,7 @@ docker run -d --name synchronist --restart always -p 3000:3000 \
   -e SYNCHRONIST_MODE=sender -e SYNCHRONIST_PASSWORD=change-me \
   -v synchronist:/synchronist/storage \
   -v /srv/mirror:/data/source -v /mnt/to-receiver:/data/send -v /mnt/from-receiver:/data/payload \
-  siegy22/synchronist:1.0.0.beta3
+  ghcr.io/aimaard/synchronist:latest
 ```
 
 Then open http://localhost:3000 and log in with the user `synchronist` and your password.
@@ -66,7 +71,7 @@ The same receiver as `docker-compose.yml`:
 ```yaml
 services:
   synchronist:
-    image: siegy22/synchronist:1.0.0.beta3
+    image: ghcr.io/aimaard/synchronist:latest
     restart: always
     ports:
       - "3000:3000"
@@ -85,7 +90,7 @@ volumes:
   synchronist:
 ```
 
-Start it with `docker compose up -d`.
+Start it with `docker compose up -d`, upgrade with `docker compose pull && docker compose up -d`.
 
 ### Install script
 
@@ -93,13 +98,20 @@ The install script asks a few questions and creates the `docker-compose.yml` and
 
 ```bash
 mkdir /opt/synchronist && cd /opt/synchronist
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/siegy22/synchronist/main/setup-deployment.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/aimaard/synchronist/main/setup-deployment.sh)"
 
 systemctl enable --now synchronist
 ```
 
-Without internet access, copy the repository (and the docker image saved with `docker save -o synchronist.tar ...`) to the
-machine and run `setup-offline-deployment.sh` from the folder containing the `.tar` file.
+Without internet access, save the image on a machine with internet access:
+
+```bash
+docker pull ghcr.io/aimaard/synchronist:latest
+docker save -o synchronist.tar ghcr.io/aimaard/synchronist:latest
+```
+
+Copy the repository and `synchronist.tar` to the machine and run `setup-offline-deployment.sh` from the folder
+containing the `.tar` file. It loads the image into docker.
 
 You also might wanna put this behind a reverse proxy to support https, I recommend using [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy).
 
@@ -149,12 +161,30 @@ Set `SYNCHRONIST_WATCHER_POLLING=true` in these cases to check the incoming fold
 
 Earlier versions stored their data in PostgreSQL and Redis and were configured in the web interface. When upgrading:
 
+- Use the `ghcr.io/aimaard/synchronist` image, new versions aren't published to Docker Hub (`siegy22/synchronist`) anymore.
 - Configure synchronist with the environment variables above and mount the folders under `/data` (or set the folder variables to the paths used before).
 - Remove the `DATABASE_URL` and `REDIS_URL` environment variables (`DATABASE_URL` would override the SQLite configuration).
 - Remove the `postgres`, `redis` and `synchronist-worker` services and the `depends_on` section.
 - `SYNCHRONIST_CHECK_PAYLOAD_CRON` and `SYNCHRONIST_CHECK_RECEIVED_FILES_CRON` aren't used anymore, the folders are watched instead.
 
 The history of syncs/payloads is not migrated.
+
+## Releasing
+
+Releases are created by pushing a git tag named after the version:
+
+```bash
+git tag 1.0.0
+git push origin 1.0.0
+```
+
+The [Release workflow](.github/workflows/release.yml) then runs the tests, builds the image for `linux/amd64` and
+`linux/arm64`, pushes it to `ghcr.io/aimaard/synchronist` tagged with the version and `latest`, and creates a GitHub release
+with generated release notes. Tags containing `alpha`, `beta` or `rc` (e.g. `1.0.0.beta3`) are marked as pre-releases.
+The version is shown in the footer of the web interface.
+
+After the very first release, make the package public once, so the image can be pulled without logging in: On GitHub,
+open the `synchronist` package (Packages on the profile/repository page) → Package settings → Change visibility → Public.
 
 ## Development
 

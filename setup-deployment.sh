@@ -9,7 +9,7 @@ offline=false
 if [ "${1:-}" = "--offline" ]; then
     offline=true
 fi
-repository=https://raw.githubusercontent.com/siegy22/synchronist/main
+repository=https://raw.githubusercontent.com/aimaard/synchronist/main
 
 fetch() {
     if $offline; then
