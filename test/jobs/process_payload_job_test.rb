@@ -49,11 +49,11 @@ class ProcessPayloadJobTest < ActiveJob::TestCase
 
     assert_equal(100, sync.progress)
     assert_equal(12, sync.bytes_transferred)
-    assert_equal({ uid: :testing, files: payload }, Marshal.load(sync.sender_payload.file.download))
+    assert_equal({ uid: "testing", files: payload }, PayloadFile.load(sync.sender_payload.file.download))
   end
 
   def generate_readable_payload(obj)
-    StringIO.new(Marshal.dump(obj))
+    StringIO.new(PayloadFile.dump(**obj))
   end
 
   def sync_with_payload(payload)

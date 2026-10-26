@@ -11,14 +11,14 @@ module Sender
     scope :ordered, -> { order(received_at: :desc) }
 
     def self.receive!(path)
-      uid = Marshal.load(File.read(path))[:uid]
+      uid = PayloadFile.load(File.binread(path))[:uid]
       created = create!(received_at: Time.now, mtime: File.mtime(path), uid: uid)
-      created.file.attach(io: File.open(path), filename: File.basename(path))
+      created.file.attach(io: File.open(path, "rb"), filename: File.basename(path))
       Sync.create!(sender_payload: created)
     end
 
     def load
-      Marshal.load(self.file.download)
+      PayloadFile.load(self.file.download)
     end
   end
 end

@@ -51,6 +51,12 @@ gem "listen", ">= 3.10"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Check the gems for known vulnerabilities [https://github.com/rubysec/bundler-audit]
+  gem "bundler-audit", require: false
 end
 
 group :development do

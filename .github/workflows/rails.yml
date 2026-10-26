@@ -39,6 +39,26 @@ jobs:
     - name: Run benchmarks
       run: bin/benchmark
 
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - name: Scan the code for security vulnerabilities
+      run: bundle exec brakeman --no-pager
+    - name: Check gems for known vulnerabilities
+      run: bundle exec bundle-audit check --update
+    - name: Set up Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: 26
+        cache: yarn
+    - name: Check JavaScript dependencies for known vulnerabilities
+      run: yarn audit
+
   docker:
     # Make sure the image still builds, releases build and publish it (see release.yml)
     if: ${{ !startsWith(github.ref, 'refs/tags/') }}
