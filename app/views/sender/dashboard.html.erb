@@ -1,5 +1,5 @@
 <div class="row">
-  <%= render "dashboard/card", label: Config.get!(:sender_source_folder), text: number_to_human_size(@disk_usage), icon: 'sd-card' %>
+  <%= render "dashboard/card", label: Config.source_folder, text: number_to_human_size(@disk_usage), icon: 'sd-card' %>
   <%= render "dashboard/card", label: "Sent files", text: @files_sent, icon: 'file-check' %>
   <%= render "dashboard/card", label: "Sent data", text: number_to_human_size(@bytes_sent), icon: 'file-binary' %>
 </div>

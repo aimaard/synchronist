@@ -16,6 +16,16 @@ Rails.application.configure do
   config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true
 
+  # Use SECRET_KEY_BASE if it's set, otherwise generate one on the first start and keep it in
+  # the storage volume, so every process (e.g. `docker exec ... bin/rails console`) uses the same.
+  config.secret_key_base = ENV["SECRET_KEY_BASE"].presence || begin
+    secret_file = Rails.root.join("storage/secret_key_base")
+    unless secret_file.exist? && secret_file.size.positive?
+      File.write(secret_file, SecureRandom.hex(64), perm: 0o600)
+    end
+    secret_file.read.strip
+  end
+
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
@@ -58,8 +68,7 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
+  # Active Job uses Solid Queue (see config/application.rb and config/queue.yml).
   # config.active_job.queue_name_prefix = "synchronist_production"
 
   config.action_mailer.perform_caching = false

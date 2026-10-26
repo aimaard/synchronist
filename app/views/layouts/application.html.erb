@@ -67,7 +67,7 @@
             </span>
           <% end %>
 
-          <%= nav_link edit_config_path do %>
+          <%= nav_link config_path do %>
             <i class="bi bi-wrench"></i>
             <span>Configuration</span>
           <% end %>
@@ -80,9 +80,9 @@
             Debug
           </div>
 
-          <%= nav_link sidekiq_path do %>
+          <%= nav_link jobs_path do %>
             <i class="bi bi-speedometer"></i>
-            <span>Sidekiq</span>
+            <span>Jobs</span>
           <% end %>
         <% end %>
       </ul>
@@ -138,6 +138,12 @@
           <!-- Begin Page Content -->
           <div class="container-fluid">
 
+            <% if Config.warnings.any? && !current_page?(config_path) %>
+              <div class="alert alert-warning" role="alert">
+                <%= Config.warnings.to_sentence %>.
+                <%= link_to "Check the configuration", config_path %>
+              </div>
+            <% end %>
             <% if flash.key?(:alert) %>
               <div class="alert alert-warning" role="alert">
                 <%= flash[:alert] %>

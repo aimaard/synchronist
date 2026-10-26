@@ -1,0 +1,45 @@
+<% content_for :title, "Configuration" %>
+
+<div class="row">
+  <div class="col-12 col-md-6">
+    <% Config.errors.each do |error| %>
+      <div class="alert alert-danger" role="alert"><%= error %></div>
+    <% end %>
+    <% Config.warnings.each do |warning| %>
+      <div class="alert alert-warning" role="alert"><%= warning %></div>
+    <% end %>
+
+    <p>
+      Synchronist is configured with environment variables, see the
+      <a href="https://github.com/siegy22/synchronist#configuration" target="_blank">README</a>.
+      Restart synchronist after changing them.
+    </p>
+
+    <table class="table" id="configuration">
+      <tbody>
+        <tr>
+          <th><code><%= Config.key("MODE") %></code></th>
+          <td><%= Config.mode || content_tag(:em, "not set") %></td>
+        </tr>
+        <% Config.settings.each do |name, description| %>
+          <tr>
+            <th>
+              <code><%= Config.key(name) %></code>
+              <div class="small text-muted fw-normal"><%= description %></div>
+            </th>
+            <td>
+              <% if name == "SYNC_CRON" %>
+                <%= Config.sync_cron %>
+              <% else %>
+                <%= Config.env(name) || content_tag(:em, "not set") %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-12 col-md-6 px-md-6">
+    <%= image_tag 'diagram.svg', style: 'max-width: 100%' %>
+  </div>
+</div>

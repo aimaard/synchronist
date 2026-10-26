@@ -7,6 +7,6 @@ class ApplicationController < ActionController::Base
   def check_configuration
     return if Config.configured?
 
-    redirect_to edit_config_path, alert: "Configuration is incomplete; Please configure accordingly"
+    redirect_to config_path, alert: "Synchronist isn't configured correctly, please set the environment variables listed below."
   end
 end

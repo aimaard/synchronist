@@ -41,15 +41,14 @@ class SyncsTest < ApplicationSystemTestCase
   test "filter files" do
     visit sync_path(syncs(:done))
 
-    fill_in "filename", with: "1.tx"
-    find(:fillable_field, "filename").native.send_keys :enter
+    filter_files "1.tx"
     assert_file_list([["1.txt", "20 Bytes"]])
 
-    fill_in "filename", with: "no-exist-file"
-    find(:fillable_field, "filename").native.send_keys :enter
+    filter_files "no-exist-file"
     assert_file_list([])
 
     click_on "Reset filter"
+    assert_no_text "No files found containing"
     assert_file_list(
       [
         ["1.txt", "20 Bytes"],
@@ -59,6 +58,12 @@ class SyncsTest < ApplicationSystemTestCase
   end
 
   private
+  def filter_files(filename)
+    fill_in "filename", with: filename
+    find(:fillable_field, "filename").native.send_keys :enter
+    assert_current_path(/filename=#{Regexp.escape(filename)}/)
+  end
+
   def assert_file_list(expected)
     actual = []
     all(".file-list li").each do |entry|

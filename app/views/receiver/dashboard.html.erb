@@ -1,5 +1,5 @@
 <div class="row">
-  <%= render "dashboard/card", label: Config.get!(:receiver_storage_folder), text: number_to_human_size(@disk_usage), icon: 'sd-card' %>
+  <%= render "dashboard/card", label: Config.storage_folder, text: number_to_human_size(@disk_usage), icon: 'sd-card' %>
   <%= render "dashboard/card", label: "Received files", text: @files_received, icon: 'file-check' %>
   <%= render "dashboard/card", label: "Received size", text: number_to_human_size(@bytes_received), icon: 'file-binary' %>
   <%= render "dashboard/card", label: "Synchronization cron", text: @sync_cron, icon: 'calendar-week' %>

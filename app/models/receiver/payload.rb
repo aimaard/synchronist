@@ -9,12 +9,11 @@ module Receiver
     scope :ordered, -> { order(sent_at: :desc) }
     before_create :generate_uid
 
-    def self.generate(uid, path: Config.get!(:receiver_storage_folder))
-      files = Dir.chdir(path) do
-        Dir.glob("**/*").select(&File.method(:file?)).each_with_object({}) do |file, memo|
-          memo[file] = File.mtime(file).to_i
-          memo
-        end
+    def self.generate(uid, path: Config.storage_folder)
+      # Avoid Dir.chdir: it is process-wide and jobs run in multiple threads.
+      files = Dir.glob("**/*", base: path).each_with_object({}) do |file, memo|
+        full_path = File.join(path, file)
+        memo[file] = File.mtime(full_path).to_i if File.file?(full_path)
       end
 
       Marshal.dump(
@@ -26,7 +25,7 @@ module Receiver
     end
 
     def self.send!
-      payload_path = Config.get!(:receiver_payload_path)
+      payload_path = Config.payload_path
       created = create!(sent_at: Time.now)
 
       File.write(payload_path, generate(created.uid), mode: "wb")

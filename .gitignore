@@ -41,3 +41,5 @@ payload.synchronist
 
 test/fixtures/data/receiver/storage/*
 !test/fixtures/data/receiver/storage/1.txt
+# Local configuration loaded by bin/dev (foreman)
+/.env

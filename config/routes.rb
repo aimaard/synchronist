@@ -1,16 +1,12 @@
-require 'sidekiq/web'
-
-Sidekiq::Web.use(Rack::Auth::Basic) do |username, password|
-  ActiveSupport::SecurityUtils.secure_compare(::Digest::SHA256.hexdigest(username), ::Digest::SHA256.hexdigest(Rails.application.config.synchronist_username)) &
-    ActiveSupport::SecurityUtils.secure_compare(::Digest::SHA256.hexdigest(password), ::Digest::SHA256.hexdigest(Rails.application.config.synchronist_password))
-end
-
 Rails.application.routes.draw do
   root "dashboard#index"
 
+  # Health check for Docker (no authentication)
+  get "up" => "rails/health#show", as: :rails_health_check
+
   resources :syncs, only: [:index, :show]
   resources :received_files, only: :index
-  resource :config, only: [:edit, :update]
+  resource :config, only: :show
 
   namespace :sender do
     resources :payloads, only: :index
@@ -20,5 +16,5 @@ Rails.application.routes.draw do
     resources :payloads, only: :index
   end
 
-  mount Sidekiq::Web => '/sidekiq', as: :sidekiq
+  mount MissionControl::Jobs::Engine, at: "/jobs", as: :jobs
 end

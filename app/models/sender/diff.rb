@@ -1,13 +1,12 @@
 module Sender
   class Diff
     def self.diff(source_path, payload_files)
-      Dir.chdir(source_path) do
-        source_files = Dir.glob("**/*").select(&File.method(:file?))
+      # Avoid Dir.chdir: it is process-wide and jobs run in multiple threads.
+      Dir.glob("**/*", base: source_path).each_with_object([]) do |file, memo|
+        full_path = File.join(source_path, file)
+        next unless File.file?(full_path)
 
-        source_files.each_with_object([]) do |file, memo|
-          memo << file if !payload_files.key?(file) || payload_files[file] < File.mtime(file).to_i
-          memo
-        end
+        memo << file if !payload_files.key?(file) || payload_files[file] < File.mtime(full_path).to_i
       end
     end
   end

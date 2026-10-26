@@ -1,0 +1,8 @@
+# The receiver sends a payload to the sender on the SYNCHRONIST_SYNC_CRON schedule.
+# Incoming files and payloads aren't polled, the FileWatcher picks them up as soon as they arrive.
+<% if Config.receiver? %>
+receiver_send_payload:
+  class: Receiver::SendPayloadJob
+  schedule: "<%= Config.sync_cron %>"
+  description: "Generate and send payload of current storage folder"
+<% end %>

@@ -1,21 +1,28 @@
 module Receiver
+  # Moves a file from the receive folder into the storage folder (and copies it into the relay folder).
   class StoreFileJob < ApplicationJob
+    # Never copy the same file twice at the same time
+    limits_concurrency key: ->(file_path) { file_path }, duration: 1.day, on_conflict: :discard
+
     def perform(file_path)
-      storage_folder = Config.get!(:receiver_storage_folder)
+      storage_folder = Config.storage_folder
       unless File.directory?(storage_folder)
         return Rails.logger.warn("Storage folder is not a valid directory, please check your configuration")
       end
 
-      unless File.file?(Config.get!(:receiver_receive_folder).join(file_path))
+      unless File.file?(Config.receive_folder.join(file_path))
         return Rails.logger.info("File #{file_path} gone, assume it's already copied")
       end
 
+      # The "/./" tells rsync -R which part of the path to keep in the target folder
+      source = "#{File.join(Config.receive_folder, "/")}.#{File.join("/", file_path)}"
+
       if Config.relay?
-        `rsync -Rt #{File.join(Config.get!(:receiver_receive_folder), "/")}.#{File.join("/", file_path)} #{Config.get!(:receiver_relay_folder)}`
+        system("rsync", "-Rt", source, Config.relay_folder.to_s, exception: true)
       end
 
-      `rsync -Rt --remove-source-files #{File.join(Config.get!(:receiver_receive_folder), "/")}.#{File.join("/", file_path)} #{storage_folder}`
-      ReceivedFile.create!(path: file_path, size: File.size(Config.get!(:receiver_storage_folder).join(file_path)))
+      system("rsync", "-Rt", "--remove-source-files", source, storage_folder.to_s, exception: true)
+      ReceivedFile.create!(path: file_path, size: File.size(storage_folder.join(file_path)))
     end
   end
 end
