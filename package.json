@@ -10,5 +10,9 @@
     "bootstrap-icons": "^1.13.2",
     "sass": "^1.106.1",
     "startbootstrap-sb-admin-2": "^4.1.4"
+  },
+  "resolutions": {
+    "datatables.net": "^1.13.11",
+    "moment": "^2.31.0"
   }
 }
