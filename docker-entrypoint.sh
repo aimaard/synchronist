@@ -1,6 +1,6 @@
 #!/bin/sh
+set -e
 
 bundle exec rails db:prepare
-bundle exec rails db:seed
 
-bundle exec "$@"
+exec bundle exec "$@"

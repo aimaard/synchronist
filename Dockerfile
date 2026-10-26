@@ -38,9 +38,18 @@ ENV RAILS_ENV=production \
     RAILS_LOG_TO_STDOUT=true \
     SOLID_QUEUE_IN_PUMA=true
 
-# All SQLite databases (app, queue, cable) and attachments live here
+# Default locations of the folders, mount them as volumes (see README.md)
+ENV SYNCHRONIST_PAYLOAD_PATH=/data/payload/payload.synchronist \
+    SYNCHRONIST_SOURCE_FOLDER=/data/source \
+    SYNCHRONIST_SEND_FOLDER=/data/send \
+    SYNCHRONIST_STORAGE_FOLDER=/data/storage \
+    SYNCHRONIST_RECEIVE_FOLDER=/data/receive
+
+# All SQLite databases (app, queue, cable), attachments and the generated secret key base live here
 VOLUME /synchronist/storage
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s \
+  CMD wget -q -O /dev/null "http://127.0.0.1:${PORT:-3000}/up" || exit 1
 CMD ["rails", "server", "--binding", "0.0.0.0"]
