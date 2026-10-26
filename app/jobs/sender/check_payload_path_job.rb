@@ -1,5 +1,8 @@
 module Sender
   class CheckPayloadPathJob < ApplicationJob
+    # The payload is only processed once, even when the watcher notices multiple changes
+    limits_concurrency key: "sender_payload", on_conflict: :discard
+
     def perform
       payload_path = Config.payload_path
 

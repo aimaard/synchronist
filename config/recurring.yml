@@ -1,16 +1,8 @@
-# The recurring tasks depend on the configured mode (SYNCHRONIST_MODE).
-<% if Config.sender? %>
-sender_check_payload:
-  class: Sender::CheckPayloadPathJob
-  schedule: "<%= ENV.fetch("SYNCHRONIST_CHECK_PAYLOAD_CRON", "* * * * *") %>"
-  description: "Check payload"
-<% elsif Config.receiver? %>
+# The receiver sends a payload to the sender on the SYNCHRONIST_SYNC_CRON schedule.
+# Incoming files and payloads aren't polled, the FileWatcher picks them up as soon as they arrive.
+<% if Config.receiver? %>
 receiver_send_payload:
   class: Receiver::SendPayloadJob
   schedule: "<%= Config.sync_cron %>"
   description: "Generate and send payload of current storage folder"
-receiver_check_received_files:
-  class: Receiver::CheckReceiveFolderJob
-  schedule: "<%= ENV.fetch("SYNCHRONIST_CHECK_RECEIVED_FILES_CRON", "* * * * *") %>"
-  description: "Check for received files and put them into storage folder"
 <% end %>

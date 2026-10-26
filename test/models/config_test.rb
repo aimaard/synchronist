@@ -41,6 +41,16 @@ class ConfigTest < ActiveSupport::TestCase
     ], Config.errors
   end
 
+  test "settle seconds" do
+    assert_equal 10.0, Config.settle_seconds
+
+    set_config("SETTLE_SECONDS", "2.5")
+    assert_equal 2.5, Config.settle_seconds
+
+    set_config("SETTLE_SECONDS", "soon")
+    assert_equal ["SYNCHRONIST_SETTLE_SECONDS must be a number"], Config.errors
+  end
+
   test "warn about missing folders" do
     set_config("SOURCE_FOLDER", "/does/not/exist")
     set_config("PAYLOAD_PATH", "/not/mounted/payload.synchronist")

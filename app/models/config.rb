@@ -1,6 +1,7 @@
 # Synchronist is configured with SYNCHRONIST_* environment variables (see README.md).
 class Config
   DEFAULT_SYNC_CRON = "0 */6 * * *"
+  DEFAULT_SETTLE_SECONDS = 10
   MODES = %w[sender receiver].freeze
 
   # Environment variable (without the SYNCHRONIST_ prefix) => description, per mode
@@ -48,6 +49,17 @@ class Config
       env("SYNC_CRON") || DEFAULT_SYNC_CRON
     end
 
+    # How long (in seconds) an incoming file must stay unchanged before it's processed
+    def settle_seconds
+      Float(env("SETTLE_SECONDS") || DEFAULT_SETTLE_SECONDS)
+    end
+
+    # Poll for file changes instead of using inotify, needed for network shares mounted
+    # into synchronist (changes made by other machines don't trigger inotify events)
+    def watcher_polling?
+      ActiveModel::Type::Boolean.new.cast(env("WATCHER_POLLING")) || false
+    end
+
     def settings
       case mode
       when "sender" then SENDER_SETTINGS
@@ -68,6 +80,7 @@ class Config
         "#{key(name)} must be set" if env(name).nil?
       end
       errors << "#{key("SYNC_CRON")} \"#{sync_cron}\" is not a valid cron expression" if receiver? && Fugit::Cron.parse(sync_cron).nil?
+      errors << "#{key("SETTLE_SECONDS")} must be a number" unless Float(env("SETTLE_SECONDS") || 0, exception: false)
       errors
     end
 

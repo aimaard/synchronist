@@ -13,11 +13,11 @@ class ThreadSafetyTest < ActiveJob::TestCase
         Receiver::Payload.generate("1234")
         Sender::Diff.diff(source_path, {})
         Sender::Send.send(source_path, ["1.txt"], Config.send_folder, sync)
-        Receiver::CheckReceiveFolderJob.perform_now
+        Receiver::StoreFileJob.perform_now("sample.zip")
       end.join
     end
 
     assert_file_list(["1.txt"], Config.send_folder)
-    assert_enqueued_jobs(1, only: Receiver::StoreFileJob)
+    assert File.file?(Config.storage_folder.join("sample.zip"))
   end
 end
