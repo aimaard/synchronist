@@ -7,7 +7,7 @@ class Receiver::SendPayloadJobTest < ActiveJob::TestCase
     assert File.file?(Config.payload_path)
     assert_equal(
       { uid: "testing", files: { "1.txt" => BASE_MTIME_TIMESTAMP } },
-      Marshal.load(File.read(Config.payload_path))
+      PayloadFile.load(File.read(Config.payload_path))
     )
   end
 end

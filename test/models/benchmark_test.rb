@@ -31,7 +31,7 @@ class BenchmarkTest < ActiveSupport::TestCase
   test "benchmark diffing" do
     skip_unless_benchmarking
 
-    payload_files = Marshal.load(Receiver::Payload.generate("1234", path: BENCHMARK_SOURCE_PATH))[:files]
+    payload_files = PayloadFile.load(Receiver::Payload.generate("1234", path: BENCHMARK_SOURCE_PATH))[:files]
     Benchmark.bm do |x|
       x.report("Diff files") do
         Sender::Diff.diff(BENCHMARK_SOURCE_PATH, payload_files)
@@ -43,7 +43,7 @@ class BenchmarkTest < ActiveSupport::TestCase
     skip_unless_benchmarking
 
     sync = Sync.create!(sender_payload: Sender::Payload.create!(uid: "1234", mtime: Time.now, received_at: Time.now))
-    files = Marshal.load(Receiver::Payload.generate("1234", path: BENCHMARK_SOURCE_PATH))[:files].keys.first(BENCHMARK_SEND_SAMPLE_SIZE)
+    files = PayloadFile.load(Receiver::Payload.generate("1234", path: BENCHMARK_SOURCE_PATH))[:files].keys.first(BENCHMARK_SEND_SAMPLE_SIZE)
     Benchmark.bm do |x|
       x.report("Send files") do
         Sender::Send.send(BENCHMARK_SOURCE_PATH, files, BENCHMARK_SOURCE_PATH, sync)

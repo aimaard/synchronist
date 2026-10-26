@@ -16,19 +16,14 @@ module Receiver
         memo[file] = File.mtime(full_path).to_i if File.file?(full_path)
       end
 
-      Marshal.dump(
-        {
-          uid: uid,
-          files: files,
-        }
-      )
+      PayloadFile.dump(uid: uid, files: files)
     end
 
     def self.send!
       payload_path = Config.payload_path
       created = create!(sent_at: Time.now)
 
-      File.write(payload_path, generate(created.uid), mode: "wb")
+      File.write(payload_path, generate(created.uid))
       File.open(payload_path, "r") do |f|
         created.file.attach(
           io: f,
