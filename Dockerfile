@@ -16,7 +16,7 @@ RUN bundle exec rails assets:clobber && bundle exec rails assets:precompile
 
 FROM ruby:4.0.9-alpine3.23
 
-RUN apk update && apk add --no-cache rsync tzdata
+RUN apk update && apk add --no-cache coreutils rsync tzdata
 
 WORKDIR /synchronist
 
