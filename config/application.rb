@@ -16,6 +16,8 @@ module Synchronist
     config.active_storage.queues.analysis   = nil
     config.active_storage.queues.purge      = nil
     config.active_storage.queues.mirror     = nil
+    # Only payload files are stored, no image variants needed
+    config.active_storage.variant_processor = :disabled
 
     config.i18n.available_locales = [:en]
     config.i18n.locale = :en

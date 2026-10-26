@@ -9,6 +9,7 @@ class ConfigTest < ApplicationSystemTestCase
     fill_in "Send Folder", with: "/mnt/samba-to-receiver"
 
     click_on "Save"
+    assert_text "Configuration saved!"
 
     assert_equal("sender", Config.get!("mode"))
     assert_equal("/tmp/payload.sync", Config.get!("sender_payload_path").to_s)
@@ -28,6 +29,7 @@ class ConfigTest < ApplicationSystemTestCase
 
     assert_difference -> { Sidekiq::Cron::Job.count }, +2 do
       click_on "Save"
+      assert_text "Configuration saved!"
     end
 
     assert_equal("receiver", Config.get!("mode"))
