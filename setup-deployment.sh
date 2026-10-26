@@ -5,7 +5,6 @@ set -euo pipefail
 compose=$(curl --silent https://raw.githubusercontent.com/siegy22/synchronist/main/docker-compose.sample.yml)
 
 secret_key=$(openssl rand -base64 36)
-pg_password=$(openssl rand -hex 24)
 pw=$(openssl rand -hex 12)
 
 read -p "Web interface username [synchronist]: " username
@@ -29,7 +28,6 @@ volumes=$(IFS=$'\n'; echo "${volumes_yml[*]}")
 
 
 compose=${compose//"<secret_key>"/"$secret_key"}
-compose=${compose//"<pg_password>"/"$pg_password"}
 compose=${compose//"<username>"/"$username"}
 compose=${compose//"<password>"/"$password"}
 compose=${compose//"<port>"/"$port"}

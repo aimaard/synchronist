@@ -3,12 +3,10 @@ services:
     image: siegy22/synchronist:1.0.0.beta2
     depends_on:
       - redis
-      - postgres
     volumes:
       - synchronist_storage:/synchronist/storage
 <volumes>
     environment:
-      DATABASE_URL: "postgresql://synchronist:<pg_password>@postgres/synchronist"
       REDIS_URL: redis://redis:6379/1
       SYNCHRONIST_USERNAME: "<username>"
       SYNCHRONIST_PASSWORD: "<password>"
@@ -25,17 +23,7 @@ services:
     volumes:
       - redis_data:/data
     restart: always
-  postgres:
-    image: postgres
-    environment:
-      POSTGRES_USER: synchronist
-      POSTGRES_PASSWORD: "<pg_password>"
-      POSTGRES_DB: synchronist
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    restart: always
 
 volumes:
   synchronist_storage:
-  pg_data:
   redis_data:

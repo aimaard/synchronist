@@ -1,5 +1,5 @@
 FROM ruby:4.0.9-alpine3.23 AS rb
-RUN apk update && apk add --no-cache postgresql-dev build-base libffi-dev nodejs rsync tzdata yarn yaml-dev
+RUN apk update && apk add --no-cache build-base libffi-dev nodejs rsync tzdata yarn yaml-dev
 COPY Gemfile* package.json yarn.lock ./
 RUN yarn install
 RUN gem update --system && gem install bundler
@@ -16,7 +16,7 @@ RUN bundle exec rails assets:clobber && bundle exec rails assets:precompile
 
 FROM ruby:4.0.9-alpine3.23
 
-RUN apk update && apk add --no-cache postgresql-client rsync tzdata
+RUN apk update && apk add --no-cache rsync tzdata
 
 WORKDIR /synchronist
 
@@ -37,6 +37,7 @@ ENV RAILS_ENV=production \
     RAILS_SERVE_STATIC_FILES=true \
     RAILS_LOG_TO_STDOUT=true
 
+# The SQLite database and attachments live here
 VOLUME /synchronist/storage
 
 ENTRYPOINT ["docker-entrypoint.sh"]
