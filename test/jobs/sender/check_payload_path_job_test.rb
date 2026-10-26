@@ -5,8 +5,8 @@ class Sender::CheckPayloadPathJobTest < ActiveSupport::TestCase
 
   setup do
     @payload_mtime = (Sender::Payload.ordered.first.mtime + 1.day).utc
-    File.write(Config.get!("sender_payload_path"), Marshal.dump({ uid: "testing", files: [] }), mode: "wb")
-    FileUtils.touch(Config.get!("sender_payload_path"), mtime: @payload_mtime)
+    File.write(Config.payload_path, Marshal.dump({ uid: "testing", files: [] }), mode: "wb")
+    FileUtils.touch(Config.payload_path, mtime: @payload_mtime)
   end
 
   test "Check payload path, once updated add models and job to process" do
@@ -26,7 +26,7 @@ class Sender::CheckPayloadPathJobTest < ActiveSupport::TestCase
     end
 
 
-    FileUtils.touch(Config.get!("sender_payload_path"), mtime: @payload_mtime + 1.hour)
+    FileUtils.touch(Config.payload_path, mtime: @payload_mtime + 1.hour)
     assert_enqueued_with(job: Sender::ProcessPayloadJob) do
       Sender::CheckPayloadPathJob.perform_now
     end

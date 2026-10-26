@@ -7,10 +7,6 @@ default: &default
       threads: 3
       processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
       polling_interval: 0.1
-  # Recurring tasks are scheduled at runtime from the configuration UI (see ConfigForm)
-  scheduler:
-    dynamic_tasks_enabled: true
-    polling_interval: 5
 
 development:
   <<: *default

@@ -4,20 +4,20 @@ require "test_helper"
 # process-wide and raises "conflicting chdir during another chdir block" when used concurrently.
 class ThreadSafetyTest < ActiveJob::TestCase
   test "file system operations don't change the working directory" do
-    File.write(Config.get!("receiver_receive_folder").join("sample.zip"), "this is a zip")
+    File.write(Config.receive_folder.join("sample.zip"), "this is a zip")
     sync = Sync.create!(sender_payload: Sender::Payload.create!(uid: "1234", mtime: Time.now, received_at: Time.now))
-    source_path = Config.get!("sender_source_folder").join("simple_add")
+    source_path = Config.source_folder.join("simple_add")
 
     Dir.chdir(Rails.root) do
       Thread.new do
         Receiver::Payload.generate("1234")
         Sender::Diff.diff(source_path, {})
-        Sender::Send.send(source_path, ["1.txt"], Config.get!("sender_send_folder"), sync)
+        Sender::Send.send(source_path, ["1.txt"], Config.send_folder, sync)
         Receiver::CheckReceiveFolderJob.perform_now
       end.join
     end
 
-    assert_file_list(["1.txt"], Config.get!("sender_send_folder"))
+    assert_file_list(["1.txt"], Config.send_folder)
     assert_enqueued_jobs(1, only: Receiver::StoreFileJob)
   end
 end

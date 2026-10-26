@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resources :syncs, only: [:index, :show]
   resources :received_files, only: :index
-  resource :config, only: [:edit, :update]
+  resource :config, only: :show
 
   namespace :sender do
     resources :payloads, only: :index

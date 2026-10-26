@@ -1,3 +1,1 @@
-Config::CONFIGS.each do |c|
-  Config.find_or_create_by!(name: c)
-end
+# Synchronist doesn't need any seed data, it's configured with environment variables.

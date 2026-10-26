@@ -1,3 +1,16 @@
-# Synchronist's recurring tasks depend on the configured mode (sender/receiver) and are
-# scheduled at runtime when saving the configuration (see ConfigForm#schedule_recurring_tasks).
-# Static tasks that should always run can be added here.
+# The recurring tasks depend on the configured mode (SYNCHRONIST_MODE).
+<% if Config.sender? %>
+sender_check_payload:
+  class: Sender::CheckPayloadPathJob
+  schedule: "<%= ENV.fetch("SYNCHRONIST_CHECK_PAYLOAD_CRON", "* * * * *") %>"
+  description: "Check payload"
+<% elsif Config.receiver? %>
+receiver_send_payload:
+  class: Receiver::SendPayloadJob
+  schedule: "<%= Config.sync_cron %>"
+  description: "Generate and send payload of current storage folder"
+receiver_check_received_files:
+  class: Receiver::CheckReceiveFolderJob
+  schedule: "<%= ENV.fetch("SYNCHRONIST_CHECK_RECEIVED_FILES_CRON", "* * * * *") %>"
+  description: "Check for received files and put them into storage folder"
+<% end %>
