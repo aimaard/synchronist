@@ -32,13 +32,17 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Use Redis adapter to run Action Cable in production
 gem "redis", "~> 5.0"
 
+# Use the database-backed adapter for Active Job
+gem "solid_queue", ">= 1.7"
+
+# Web UI for inspecting Solid Queue jobs (mounted at /jobs)
+gem "mission_control-jobs", ">= 1.3"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
 gem "cssbundling-rails", ">= 1.4"
 gem "bootstrap_form", ">= 5.6"
-gem "sidekiq", ">= 8.0"
-gem "sidekiq-cron"
 gem "rails-i18n", ">= 8.0"
 gem "parallel"
 gem "fugit"

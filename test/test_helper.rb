@@ -1,12 +1,6 @@
 ENV["RAILS_ENV"] ||= "test"
-# XXX: Use database 2, by default sidekiq will use 0.
-# This prevents Sidekiq::Cron::Jobs from being changed in dev when running tests.
-ENV["REDIS_URL"] = "redis://localhost:6379/2"
 require_relative "../config/environment"
 require "rails/test_help"
-require "sidekiq/testing"
-
-Sidekiq.logger.level = Logger::WARN
 
 class ActiveSupport::TestCase
   # Disable parallel tests because they're mostly based on files
@@ -38,7 +32,7 @@ class ActiveSupport::TestCase
     FileUtils.mkdir_p(Config.get!("receiver_relay_folder"))
     FileUtils.rm_rf Dir.glob(Config.get!("receiver_storage_folder").join('**/*')).reject { |f| File.basename(f) == "1.txt" }
 
-    Sidekiq::Cron::Job.destroy_all!
+    SolidQueue::RecurringTask.delete_all
   end
 
   def assert_file_list(expected, dir)

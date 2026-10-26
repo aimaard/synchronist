@@ -13,6 +13,10 @@ development:
   primary:
     <<: *default
     database: storage/development.sqlite3
+  queue:
+    <<: *default
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -21,9 +25,17 @@ test:
   primary:
     <<: *default
     database: storage/test.sqlite3
+  queue:
+    <<: *default
+    database: storage/test_queue.sqlite3
+    migrations_paths: db/queue_migrate
 
 # Store production databases in the storage/ directory, which is a persistent Docker volume (see Dockerfile).
 production:
   primary:
     <<: *default
     database: storage/production.sqlite3
+  queue:
+    <<: *default
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate

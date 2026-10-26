@@ -35,9 +35,10 @@ COPY docker-entrypoint.sh /bin/
 
 ENV RAILS_ENV=production \
     RAILS_SERVE_STATIC_FILES=true \
-    RAILS_LOG_TO_STDOUT=true
+    RAILS_LOG_TO_STDOUT=true \
+    SOLID_QUEUE_IN_PUMA=true
 
-# The SQLite database and attachments live here
+# All SQLite databases (app, queue) and attachments live here
 VOLUME /synchronist/storage
 
 ENTRYPOINT ["docker-entrypoint.sh"]

@@ -27,7 +27,7 @@ class ConfigTest < ApplicationSystemTestCase
     check "Relay mode"
     fill_in "Relay folder", with: "/mnt/relay"
 
-    assert_difference -> { Sidekiq::Cron::Job.count }, +2 do
+    assert_difference -> { SolidQueue::RecurringTask.count }, +2 do
       click_on "Save"
       assert_text "Configuration saved!"
     end

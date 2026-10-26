@@ -1,5 +1,5 @@
 services:
-  synchronist: &synchronist
+  synchronist:
     image: siegy22/synchronist:1.0.0.beta2
     depends_on:
       - redis
@@ -14,10 +14,6 @@ services:
     ports:
       - "<port>:3000"
     restart: always
-  synchronist-worker:
-    <<: *synchronist
-    command: bundle exec sidekiq
-    ports: []
   redis:
     image: redis
     volumes:

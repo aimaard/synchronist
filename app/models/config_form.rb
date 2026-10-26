@@ -25,15 +25,36 @@ class ConfigForm
         Config.set!(name: attr, value: public_send(attr))
       end
 
-      Sidekiq::Cron::Job.destroy_all!
-      if Config.configured? && mode == "sender"
-        Sidekiq::Cron::Job.create(name: "Sender: Check payload ", cron: ENV.fetch("SYNCHRONIST_CHECK_PAYLOAD_CRON", "* * * * *"), class: Sender::CheckPayloadPathJob.to_s)
-      elsif Config.configured? && mode == "receiver"
-        Sidekiq::Cron::Job.create(name: "Receiver: Generate and send payload of current storage folder", cron: receiver_send_payload_cron, class: Receiver::SendPayloadJob.to_s)
-        Sidekiq::Cron::Job.create(name: "Receiver: Check for received files and put them into storage folder", cron: ENV.fetch("SYNCHRONIST_CHECK_RECEIVED_FILES_CRON", "* * * * *"), class: Receiver::CheckReceiveFolderJob.to_s)
-      end
+      schedule_recurring_tasks
     end
     true
+  end
+
+  def schedule_recurring_tasks
+    SolidQueue::RecurringTask.dynamic.delete_all
+    return unless Config.configured?
+
+    if mode == "sender"
+      SolidQueue.schedule_recurring_task(
+        "sender_check_payload",
+        class: Sender::CheckPayloadPathJob.to_s,
+        schedule: ENV.fetch("SYNCHRONIST_CHECK_PAYLOAD_CRON", "* * * * *"),
+        description: "Sender: Check payload"
+      )
+    elsif mode == "receiver"
+      SolidQueue.schedule_recurring_task(
+        "receiver_send_payload",
+        class: Receiver::SendPayloadJob.to_s,
+        schedule: receiver_send_payload_cron,
+        description: "Receiver: Generate and send payload of current storage folder"
+      )
+      SolidQueue.schedule_recurring_task(
+        "receiver_check_received_files",
+        class: Receiver::CheckReceiveFolderJob.to_s,
+        schedule: ENV.fetch("SYNCHRONIST_CHECK_RECEIVED_FILES_CRON", "* * * * *"),
+        description: "Receiver: Check for received files and put them into storage folder"
+      )
+    end
   end
 
   def validate_cron

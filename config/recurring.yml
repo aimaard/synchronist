@@ -1,0 +1,3 @@
+# Synchronist's recurring tasks depend on the configured mode (sender/receiver) and are
+# scheduled at runtime when saving the configuration (see ConfigForm#schedule_recurring_tasks).
+# Static tasks that should always run can be added here.

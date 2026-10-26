@@ -10,7 +10,11 @@ module Synchronist
   class Application < Rails::Application
     config.load_defaults 7.0
 
-    config.active_job.queue_adapter = :sidekiq
+    config.active_job.queue_adapter = :solid_queue
+    config.solid_queue.connects_to = { database: { writing: :queue } }
+    # Protect the jobs dashboard with the app's own basic auth
+    config.mission_control.jobs.base_controller_class = "ApplicationController"
+    config.mission_control.jobs.http_basic_auth_enabled = false
     config.action_mailer.deliver_later_queue_name = nil
     config.action_mailbox.queues.routing    = nil
     config.active_storage.queues.analysis   = nil
