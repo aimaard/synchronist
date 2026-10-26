@@ -1,0 +1,11 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "File Access",
+      "fingerprint": "dd7af79e24e8d54941ddd2eb8168e5fb06d46857e75b3628128ff2796265c9a0",
+      "file": "app/models/receiver/payload.rb",
+      "note": "The payload path is configured by the operator (SYNCHRONIST_PAYLOAD_PATH), it's not user input"
+    }
+  ],
+  "brakeman_version": "8.1.0"
+}

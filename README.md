@@ -157,6 +157,12 @@ Set `SYNCHRONIST_WATCHER_POLLING=true` in these cases to check the incoming fold
   [Solid Cable](https://github.com/rails/solid_cable)) and the `secret_key_base` generated on the first start (set `SECRET_KEY_BASE` to use your own).
 - Everything runs in a single process: The web server, the background jobs (Solid Queue Puma plugin) and the folder watcher.
 
+### Upgrading from 1.0.0
+
+Payloads are stored as JSON now (synchronist 1.0.0 used Ruby's Marshal format, which could be abused to run code on the
+sender with a crafted payload). Upgrade the receiver and the sender together: A sender doesn't accept payloads of an older
+receiver, the payload check fails with "Invalid payload" until both run the same version.
+
 ### Upgrading from 1.0.0.beta or 1.0.0.beta2
 
 Earlier versions stored their data in PostgreSQL and Redis and were configured in the web interface. When upgrading:
@@ -205,5 +211,6 @@ bin/dev
 `bin/dev` (foreman) loads the `.env` file and starts the web server (including the folder watcher), the CSS build and the
 job worker. Log in at http://localhost:3000 with `sync`/`sync`.
 
-Run the tests with `bin/rails test test:system` and the benchmarks with `bin/benchmark`. macOS ships a different rsync
+Run the tests with `bin/rails test test:system` and the benchmarks with `bin/benchmark`. CI also checks for security
+issues with `bundle exec brakeman`, `bundle exec bundle-audit check --update` and `yarn audit`. macOS ships a different rsync
 (openrsync) which doesn't support all the options synchronist uses, install the real one with `brew install rsync`.
