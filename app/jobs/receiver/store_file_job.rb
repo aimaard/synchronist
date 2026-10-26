@@ -10,11 +10,14 @@ module Receiver
         return Rails.logger.info("File #{file_path} gone, assume it's already copied")
       end
 
+      # The "/./" tells rsync -R which part of the path to keep in the target folder
+      source = "#{File.join(Config.get!(:receiver_receive_folder), "/")}.#{File.join("/", file_path)}"
+
       if Config.relay?
-        `rsync -Rt #{File.join(Config.get!(:receiver_receive_folder), "/")}.#{File.join("/", file_path)} #{Config.get!(:receiver_relay_folder)}`
+        system("rsync", "-Rt", source, Config.get!(:receiver_relay_folder).to_s)
       end
 
-      `rsync -Rt --remove-source-files #{File.join(Config.get!(:receiver_receive_folder), "/")}.#{File.join("/", file_path)} #{storage_folder}`
+      system("rsync", "-Rt", "--remove-source-files", source, storage_folder.to_s)
       ReceivedFile.create!(path: file_path, size: File.size(Config.get!(:receiver_storage_folder).join(file_path)))
     end
   end
