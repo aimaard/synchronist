@@ -23,8 +23,8 @@ module Receiver
       payload_path = Config.payload_path
       created = create!(sent_at: Time.now)
 
-      File.write(payload_path, generate(created.uid))
-      File.open(payload_path, "r") do |f|
+      File.binwrite(payload_path, generate(created.uid))
+      File.open(payload_path, "rb") do |f|
         created.file.attach(
           io: f,
           filename: File.basename(payload_path)

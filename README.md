@@ -159,8 +159,8 @@ Set `SYNCHRONIST_WATCHER_POLLING=true` in these cases to check the incoming fold
 
 ### Upgrading from 1.0.0
 
-Payloads are stored as JSON now (synchronist 1.0.0 used Ruby's Marshal format, which could be abused to run code on the
-sender with a crafted payload). Upgrade the receiver and the sender together: A sender doesn't accept payloads of an older
+Payloads are stored as gzipped JSON now (synchronist 1.0.0 used Ruby's Marshal format, which could be abused to run code
+on the sender with a crafted payload). They're also much smaller: about 15 MB for a mirror with 1.6 million files. Upgrade the receiver and the sender together: A sender doesn't accept payloads of an older
 receiver, the payload check fails with "Invalid payload" until both run the same version.
 
 ### Upgrading from 1.0.0.beta or 1.0.0.beta2

@@ -5,7 +5,7 @@ class Sender::CheckPayloadPathJobTest < ActiveSupport::TestCase
 
   setup do
     @payload_mtime = (Sender::Payload.ordered.first.mtime + 1.day).utc
-    File.write(Config.payload_path, PayloadFile.dump(uid: "testing", files: {}))
+    File.binwrite(Config.payload_path, PayloadFile.dump(uid: "testing", files: {}))
     FileUtils.touch(Config.payload_path, mtime: @payload_mtime)
   end
 
