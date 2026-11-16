@@ -6,9 +6,9 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.8",
+    "bootstrap": "^5.3.9",
     "bootstrap-icons": "^1.13.2",
-    "sass": "^1.106.1",
+    "sass": "^1.108.2",
     "startbootstrap-sb-admin-2": "^4.1.4"
   },
   "resolutions": {
